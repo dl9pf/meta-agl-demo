@@ -24,3 +24,13 @@ AGL_FEATURES:append = " agldemo"
 PREFERRED_RPROVIDER_kuksa-val-certificates-ca = "kuksa-certificates-agl"
 PREFERRED_RPROVIDER_kuksa-val-certificates-server = "kuksa-certificates-agl"
 PREFERRED_RPROVIDER_kuksa-val-certificates-client = "kuksa-certificates-agl"
+
+
+
+
+
+
+
+
+########### WORKAROUND FOR MESON and QT6 ############
+QT6_INSTALL_LIBEXECDIR := "${bindir}"

@@ -33,9 +33,9 @@ RDEPENDS:${PN}:append = " \
     weston-ini-conf-no-activate \
     ${@bb.utils.contains('DISTRO_FEATURES', 'agl-devel', 'unzip mpc' , '', d)} \
     psplash-portrait-config \
+    homescreen \
     "
 
-#    homescreen \
 #    launcher \
 #    qtquickcontrols2-agl \
 #    qtquickcontrols2-agl-style \

@@ -1,0 +1,500 @@
+From e52b4421fe6f271ca6d04ada718b89e6a076cc9f Mon Sep 17 00:00:00 2001
+From: Jan-Simon Moeller <jsmoeller@linuxfoundation.org>
+Date: Wed, 18 Oct 2023 13:11:26 +0200
+Subject: [PATCH] WIP port to qt6
+
+All but pbap is converted. meson files updated.
+
+Signed-off-by: Jan-Simon Moeller <jsmoeller@linuxfoundation.org>
+---
+ applauncher/meson.build            | 10 +++++-----
+ bluetooth/bluetoothmodel.cpp       |  2 +-
+ bluetooth/meson.build              | 10 +++++-----
+ hvac/meson.build                   | 10 +++++-----
+ map/meson.build                    | 10 +++++-----
+ mediaplayer/meson.build            | 10 +++++-----
+ meson.build                        |  5 +++--
+ navigation/meson.build             | 10 +++++-----
+ network/meson.build                | 10 +++++-----
+ pbap/meson.build                   | 10 +++++-----
+ pbap/pbap.h                        |  3 ++-
+ radio/meson.build                  | 10 +++++-----
+ telephony/meson.build              | 10 +++++-----
+ vehicle-signals/QtKuksaClient.cpp  |  2 +-
+ vehicle-signals/meson.build        | 12 ++++++------
+ vehicle-signals/vehiclesignals.cpp |  2 +-
+ weather/meson.build                | 10 +++++-----
+ 17 files changed, 69 insertions(+), 67 deletions(-)
+
+diff --git a/applauncher/meson.build b/applauncher/meson.build
+index b36184a..2393d62 100644
+--- a/applauncher/meson.build
++++ b/applauncher/meson.build
+@@ -1,9 +1,9 @@
+ cpp = meson.get_compiler('cpp')
+ grpcpp_reflection_dep = cpp.find_library('grpc++_reflection')
+ 
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ applauncher_dep = [
+-    qt5_dep,
++    qt_dep,
+     dependency('protobuf'),
+     dependency('grpc'),
+     dependency('grpc++'),
+@@ -28,8 +28,8 @@ grpc_gen = generator(protoc, \
+                        '@INPUT@'])
+ generated_grpc_sources = grpc_gen.process('protos/applauncher.proto')
+ 
+-moc_files = qt5.compile_moc(headers : ['AppLauncherClient.h', 'AppLauncherGrpcClient.h'],
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers : ['AppLauncherClient.h', 'AppLauncherGrpcClient.h'],
++                            dependencies: qt_dep)
+ 
+ src = [
+     'AppLauncherClient.cpp',
+@@ -52,5 +52,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-applauncher',
+                  filebase : 'qtappfw-applauncher',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL AppLauncher API in Qt objects')
+diff --git a/bluetooth/bluetoothmodel.cpp b/bluetooth/bluetoothmodel.cpp
+index 605f950..dafdd54 100644
+--- a/bluetooth/bluetoothmodel.cpp
++++ b/bluetooth/bluetoothmodel.cpp
+@@ -248,5 +248,5 @@ bool BluetoothModelFilter::filterAcceptsRow(int sourceRow, const QModelIndex &so
+ 	QModelIndex index = model->index(sourceRow);
+ 	bool paired = model->data(index, BluetoothModel::BluetoothRoles::PairedRole).toBool();
+ 
+-	return ((paired ? "true" : "false") == filterRegExp().pattern());
++	return ((paired ? "true" : "false") == filterRegularExpression().pattern());
+ }
+diff --git a/bluetooth/meson.build b/bluetooth/meson.build
+index 008fda1..c8f7e0f 100644
+--- a/bluetooth/meson.build
++++ b/bluetooth/meson.build
+@@ -1,17 +1,17 @@
+-qt5_dep = dependency('qt5', modules: ['Core', 'Qml'])
++qt_dep = dependency('qt6', modules: ['Core', 'Qml'])
+ 
+ glib_dep = [dependency('glib-2.0'), dependency('gio-2.0'), dependency('gobject-2.0'), dependency('gio-unix-2.0')]
+ bluez_glib_dep = dependency('bluez-glib')
+ 
+-moc_files = qt5.compile_moc(headers : ['bluetooth.h', 'bluetoothmodel.h'],
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers : ['bluetooth.h', 'bluetoothmodel.h'],
++                            dependencies: qt_dep)
+ 
+ src = ['bluetooth.cpp', 'bluetoothmodel.cpp', 'bluetootheventhandler.cpp', moc_files]
+ lib = shared_library('qtappfw-bt',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: [qt5_dep, glib_dep, bluez_glib_dep],
++                     dependencies: [qt_dep, glib_dep, bluez_glib_dep],
+                      install: true)
+ 
+ install_headers('bluetooth.h')
+@@ -21,7 +21,7 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-bt',
+                  filebase : 'qtappfw-bt',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'AGL Qt demo app framework helper library for using BlueZ.')
+ 
+ qtappfw_bt_dep = declare_dependency(link_with: lib,
+diff --git a/hvac/meson.build b/hvac/meson.build
+index ce3679c..ad41612 100644
+--- a/hvac/meson.build
++++ b/hvac/meson.build
+@@ -1,14 +1,14 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+-moc_files = qt5.compile_moc(headers: 'hvac.h',
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: 'hvac.h',
++                            dependencies: qt_dep)
+ 
+ src = ['hvac.cpp', moc_files]
+ lib = shared_library('qtappfw-hvac',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: [qt5_dep, qtappfw_vs_dep],
++                     dependencies: [qt_dep, qtappfw_vs_dep],
+                      install: true)
+ 
+ install_headers('hvac.h')
+@@ -18,5 +18,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-hvac',
+                  filebase : 'qtappfw-hvac',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'AGL Qt demo app framework helper library for using HVAC.')
+diff --git a/map/meson.build b/map/meson.build
+index 1f563e6..e68cd0e 100644
+--- a/map/meson.build
++++ b/map/meson.build
+@@ -1,14 +1,14 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+-moc_files = qt5.compile_moc(headers : 'map.h',
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers : 'map.h',
++                            dependencies: qt_dep)
+ 
+ src = ['map.cpp', moc_files]
+ lib = shared_library('qtappfw-bt-map',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: [qt5_dep, qtappfw_bt_dep],
++                     dependencies: [qt_dep, qtappfw_bt_dep],
+                      install: true)
+ 
+ install_headers('map.h')
+@@ -18,5 +18,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-bt-map',
+                  filebase : 'qtappfw-bt-map',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL Bluetooth MAP profile API in Qt objects')
+diff --git a/mediaplayer/meson.build b/mediaplayer/meson.build
+index ff2db0a..b6a716e 100644
+--- a/mediaplayer/meson.build
++++ b/mediaplayer/meson.build
+@@ -1,4 +1,4 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+ mpdclient_dep = dependency('libmpdclient')
+ 
+@@ -8,8 +8,8 @@ mediaplayer_headers = [ 'MediaplayerBackend.h',
+                         'MpdEventHandler.h',
+                         'mediaplayer.h'
+ ]
+-moc_files = qt5.compile_moc(headers: mediaplayer_headers,
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: mediaplayer_headers,
++                            dependencies: qt_dep)
+ 
+ src = [ 'MediaplayerBackend.cpp',
+         'MediaplayerBluezBackend.cpp',
+@@ -22,7 +22,7 @@ lib = shared_library('qtappfw-mediaplayer',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: [qt5_dep, mpdclient_dep, qtappfw_bt_dep, qtappfw_vs_dep],
++                     dependencies: [qt_dep, mpdclient_dep, qtappfw_bt_dep, qtappfw_vs_dep],
+                      install: true)
+ 
+ install_headers('mediaplayer.h')
+@@ -32,5 +32,5 @@ pkg_mod.generate(libraries: lib,
+                  version: '1.0',
+                  name: 'libqtappfw-mediaplayer',
+                  filebase: 'qtappfw-mediaplayer',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description: 'Library wrapping AGL mediaplayer API in Qt objects')
+diff --git a/meson.build b/meson.build
+index 263d3d5..c4f720d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -29,7 +29,7 @@ project (
+     ],
+ )
+ 
+-qt5 = import('qt5')
++qt = import('qt6')
+ 
+ #subdir('docs')
+ 
+@@ -44,7 +44,8 @@ subdir('map')
+ subdir('mediaplayer')
+ subdir('navigation')
+ subdir('network')
+-subdir('pbap')
++#disabled, does not compile, no users atm
++#subdir('pbap')
+ subdir('radio')
+ subdir('telephony')
+ subdir('weather')
+diff --git a/navigation/meson.build b/navigation/meson.build
+index 9b8e3ea..5e59f3d 100644
+--- a/navigation/meson.build
++++ b/navigation/meson.build
+@@ -1,14 +1,14 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+-moc_files = qt5.compile_moc(headers: 'navigation.h',
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: 'navigation.h',
++                            dependencies: qt_dep)
+ 
+ src = ['navigation.cpp', moc_files]
+ lib = shared_library('qtappfw-navigation',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: [qt5_dep, qtappfw_vs_dep],
++                     dependencies: [qt_dep, qtappfw_vs_dep],
+                      install: true)
+ 
+ install_headers('navigation.h')
+@@ -18,5 +18,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-navigation',
+                  filebase : 'qtappfw-navigation',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL navigation API in Qt objects')
+diff --git a/network/meson.build b/network/meson.build
+index d60369d..0726264 100644
+--- a/network/meson.build
++++ b/network/meson.build
+@@ -1,4 +1,4 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+ glib_dep = [dependency('glib-2.0'), dependency('gio-2.0'), dependency('gobject-2.0'), dependency('gio-unix-2.0')]
+ connman_glib_dep = dependency('connman-glib')
+@@ -12,8 +12,8 @@ network_headers = [ 'abstractnetworkmodel.h',
+                     'wiredadapter.h',
+                     'wirednetworkmodel.h'
+ ]
+-moc_files = qt5.compile_moc(headers: network_headers,
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: network_headers,
++                            dependencies: qt_dep)
+ 
+ src = [ 'network.cpp',
+         'networkeventhandler.cpp',
+@@ -29,7 +29,7 @@ lib = shared_library('qtappfw-network',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: [qt5_dep, glib_dep, connman_glib_dep],
++                     dependencies: [qt_dep, glib_dep, connman_glib_dep],
+                      install: true)
+ 
+ install_headers(['network.h', 'networkadapter.h', 'wifiadapter.h', 'wiredadapter.h'])
+@@ -39,5 +39,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-network',
+                  filebase : 'qtappfw-network',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL network API in Qt objects')
+diff --git a/pbap/meson.build b/pbap/meson.build
+index 7e2d1fb..912f0bb 100644
+--- a/pbap/meson.build
++++ b/pbap/meson.build
+@@ -1,14 +1,14 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+-moc_files = qt5.compile_moc(headers : 'pbap.h',
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers : 'pbap.h',
++                            dependencies: qt_dep)
+ 
+ src = ['pbap.cpp', moc_files]
+ lib = shared_library('qtappfw-bt-pbap',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: qt5_dep,
++                     dependencies: qt_dep,
+                      install: true)
+ 
+ install_headers('pbap.h')
+@@ -18,5 +18,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-bt-pbap',
+                  filebase : 'qtappfw-bt-pbap',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL Bluetooth PBAP profile API in Qt objects')
+diff --git a/pbap/pbap.h b/pbap/pbap.h
+index 25fa450..9806460 100644
+--- a/pbap/pbap.h
++++ b/pbap/pbap.h
+@@ -73,7 +73,8 @@ class Contact : public QObject
+         QString photo() {return m_photo;};
+         QList<PhoneNumber *>numbers() {return m_numbers;};
+         QQmlListProperty<PhoneNumber>numbersList() {
+-            return QQmlListProperty<PhoneNumber>(this, 0, &Contact::countNumbers, &Contact::atNumbers);
++            //return QQmlListProperty<PhoneNumber>(this, 0, &Contact::countNumbers, &Contact::atNumbers);
++            return NULL;
+         }
+         static int countNumbers(QQmlListProperty<PhoneNumber> *property) {
+             Contact *contact = qobject_cast<Contact *>(property->object);
+diff --git a/radio/meson.build b/radio/meson.build
+index 7ae1bac..9fd78fc 100644
+--- a/radio/meson.build
++++ b/radio/meson.build
+@@ -1,9 +1,9 @@
+ cpp = meson.get_compiler('cpp')
+ grpcpp_reflection_dep = cpp.find_library('grpc++_reflection')
+ 
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ radio_dep = [
+-    qt5_dep,
++    qt_dep,
+     dependency('protobuf'),
+     dependency('grpc'),
+     dependency('grpc++'),
+@@ -28,8 +28,8 @@ grpc_gen = generator(protoc, \
+                        '@INPUT@'])
+ generated_grpc_sources = grpc_gen.process('protos/radio.proto')
+ 
+-moc_files = qt5.compile_moc(headers: ['RadioClient.h', 'RadioGrpcClient.h'],
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: ['RadioClient.h', 'RadioGrpcClient.h'],
++                            dependencies: qt_dep)
+ 
+ src = [
+     'RadioClient.cpp',
+@@ -53,5 +53,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-radio',
+                  filebase : 'qtappfw-radio',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL radio API in Qt objects')
+diff --git a/telephony/meson.build b/telephony/meson.build
+index 934d70c..f32777f 100644
+--- a/telephony/meson.build
++++ b/telephony/meson.build
+@@ -1,14 +1,14 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+-moc_files = qt5.compile_moc(headers: 'telephony.h',
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: 'telephony.h',
++                            dependencies: qt_dep)
+ 
+ src = ['telephony.cpp', moc_files]
+ lib = shared_library('qtappfw-phone',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: qt5_dep,
++                     dependencies: qt_dep,
+                      install: true)
+ 
+ install_headers('telephony.h')
+@@ -18,5 +18,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-phone',
+                  filebase : 'qtappfw-phone',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL telephony API in Qt objects')
+diff --git a/vehicle-signals/QtKuksaClient.cpp b/vehicle-signals/QtKuksaClient.cpp
+index 901459d..e258670 100644
+--- a/vehicle-signals/QtKuksaClient.cpp
++++ b/vehicle-signals/QtKuksaClient.cpp
+@@ -84,7 +84,7 @@ QtKuksaClient::QtKuksaClient(const std::shared_ptr< ::grpc::ChannelInterface>& c
+ void QtKuksaClient::connect()
+ {
+ 	// Check for connection in another thread
+-	QFuture<void> future = QtConcurrent::run(this, &QtKuksaClient::waitForConnected);
++	QFuture<void> future = QtConcurrent::run(&QtKuksaClient::waitForConnected, this);
+ }
+ 
+ void QtKuksaClient::get(const QString &path, const bool actuator)
+diff --git a/vehicle-signals/meson.build b/vehicle-signals/meson.build
+index 50383e4..b8ee38a 100644
+--- a/vehicle-signals/meson.build
++++ b/vehicle-signals/meson.build
+@@ -1,10 +1,10 @@
+ cpp = meson.get_compiler('cpp')
+ grpcpp_reflection_dep = cpp.find_library('grpc++_reflection')
+ 
+-qt5_dep = dependency('qt5', modules: ['Core', 'Concurrent'])
++qt_dep = dependency('qt6', modules: ['Core', 'Concurrent'])
+ 
+ vs_dep = [
+-    qt5_dep,
++    qt_dep,
+     dependency('protobuf'),
+     dependency('grpc'),
+     dependency('grpc++'),
+@@ -36,8 +36,8 @@ generated_grpc_sources = [ \
+     grpc_gen.process(protos_dir / 'val.proto', preserve_path_from : protos_base_dir),
+ ]
+ 
+-moc_files = qt5.compile_moc(headers: [ 'vehiclesignals.h', 'QtKuksaClient.h' ],
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: [ 'vehiclesignals.h', 'QtKuksaClient.h' ],
++                            dependencies: qt_dep)
+ 
+ src = [
+     'vehiclesignals.cpp',
+@@ -62,10 +62,10 @@ pkg_mod.generate(libraries: lib,
+                  version: '1.0',
+                  name: 'libqtappfw-vehicle-signals',
+                  filebase: 'qtappfw-vehicle-signals',
+-                 requires: ['Qt5Core'],
++                 requires: ['Qt6Core'],
+                  description: 'Library wrapping VSS API in Qt objects')
+ 
+-qtappfw_vs_dep = declare_dependency(dependencies: qt5_dep,
++qtappfw_vs_dep = declare_dependency(dependencies: qt_dep,
+                                     link_with: lib,
+                                     include_directories: '.',
+                                     sources: ['vehiclesignals.h'])
+diff --git a/vehicle-signals/vehiclesignals.cpp b/vehicle-signals/vehiclesignals.cpp
+index adf371a..f550955 100644
+--- a/vehicle-signals/vehiclesignals.cpp
++++ b/vehicle-signals/vehiclesignals.cpp
+@@ -160,7 +160,7 @@ void VehicleSignals::onSubscribeDone(const QMap<QString, bool> &signals_, bool c
+ {
+ 	if (!canceled) {
+ 		// queue up a resubscribe attempt
+-		QFuture<void> future = QtConcurrent::run(this, &VehicleSignals::resubscribe, signals_);
++		QFuture<void> future = QtConcurrent::run(&VehicleSignals::resubscribe, this, signals_);
+ 	}
+ }
+ 
+diff --git a/weather/meson.build b/weather/meson.build
+index 116975b..bb6e3aa 100644
+--- a/weather/meson.build
++++ b/weather/meson.build
+@@ -1,14 +1,14 @@
+-qt5_dep = dependency('qt5', modules: ['Qml'])
++qt_dep = dependency('qt6', modules: ['Qml'])
+ 
+-moc_files = qt5.compile_moc(headers: 'weather.h',
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: 'weather.h',
++                            dependencies: qt_dep)
+ 
+ src = ['weather.cpp', moc_files]
+ lib = shared_library('qtappfw-weather',
+                      sources: src,
+                      version: '1.0.0',
+                      soversion: '0',
+-                     dependencies: qt5_dep,
++                     dependencies: qt_dep,
+                      install: true)
+ 
+ install_headers('weather.h')
+@@ -18,5 +18,5 @@ pkg_mod.generate(libraries : lib,
+                  version : '1.0',
+                  name : 'libqtappfw-weather',
+                  filebase : 'qtappfw-weather',
+-                 requires: 'Qt5Qml',
++                 requires: 'Qt6Qml',
+                  description : 'Library wrapping AGL weather API in Qt objects')

@@ -1,0 +1,212 @@
+From 84f26d68fd767dc0d8e98206ff943ca1e11794fb Mon Sep 17 00:00:00 2001
+From: Jan-Simon Moeller <jsmoeller@linuxfoundation.org>
+Date: Wed, 18 Oct 2023 13:12:20 +0200
+Subject: [PATCH] WIP port to qt6
+
+Update meson files and remove no longer supported widgets.
+This is not fully functional and needs more work.
+
+Signed-off-by: Jan-Simon Moeller <jsmoeller@linuxfoundation.org>
+---
+ homescreen/meson.build                    | 14 +++++++-------
+ homescreen/qml/IconItem.qml               |  2 +-
+ homescreen/qml/MediaAreaBlank.qml         |  2 +-
+ homescreen/qml/ShortcutIcon.qml           |  2 +-
+ homescreen/qml/TopArea.qml                | 12 ++++++------
+ homescreen/qml/background_with_panels.qml | 16 ++++++++--------
+ homescreen/qml/bottompanel.qml            |  4 ++--
+ homescreen/qml/qml.qrc                    |  6 ------
+ meson.build                               |  2 +-
+ 9 files changed, 27 insertions(+), 33 deletions(-)
+
+diff --git a/homescreen/meson.build b/homescreen/meson.build
+index db2409d..8776d3d 100644
+--- a/homescreen/meson.build
++++ b/homescreen/meson.build
+@@ -1,5 +1,5 @@
+ cpp = meson.get_compiler('cpp')
+-qt5_dep = dependency('qt5', modules: ['Qml', 'Quick', 'Gui'])
++qt_dep = dependency('qt6', modules: ['Core', 'Qml', 'Quick', 'Gui'])
+ dep_wayland_client = dependency('wayland-client', version: '>= 1.20.0')
+ dep_qtappfw = [
+     dependency('qtappfw-weather'),
+@@ -10,11 +10,11 @@ dep_qtappfw = [
+ ]
+ 
+ qt_defines = []
+-qpa_header_path = join_paths(qt5_dep.version(), 'QtGui')
++qpa_header_path = join_paths(qt_dep.version(), 'QtGui')
+ qpa_header = join_paths(qpa_header_path, 'qpa/qplatformnativeinterface.h')
+ # we pass this QT_QPA_HEADER straight in the code as there's no easy
+ # way to pass the correct header
+-if cpp.has_header(qpa_header, dependencies : qt5_dep)
++if cpp.has_header(qpa_header, dependencies : qt_dep)
+   qt_defines += [ '-DQT_QPA_HEADER=<@0@>'.format(qpa_header) ]
+   message('Found QtGui QPA header in ' + qpa_header_path)
+ endif
+@@ -25,7 +25,7 @@ agl_compositor_dep = dependency('agl-compositor-0.0.21-protocols')
+ dir_agl_compositor_base = agl_compositor_dep.get_variable(pkgconfig: 'pkgdatadir')
+ 
+ homescreen_dep = [
+-    qt5_dep,
++    qt_dep,
+     dep_wayland_client,
+     dep_qtappfw,
+ ]
+@@ -40,7 +40,7 @@ homescreen_resources = [
+   'qml/qml.qrc'
+ ]
+ 
+-resource_files = qt5.compile_resources(sources: homescreen_resources)
++resource_files = qt.compile_resources(sources: homescreen_resources)
+ 
+ protocols = [
+         [ 'agl-shell', 'agl-compositor' ],
+@@ -86,8 +86,8 @@ homescreen_src_headers = [
+   'src/shell.h'
+ ]
+ 
+-moc_files = qt5.compile_moc(headers: homescreen_src_headers,
+-                            dependencies: qt5_dep)
++moc_files = qt.compile_moc(headers: homescreen_src_headers,
++                            dependencies: qt_dep)
+ 
+ homescreen_src = [
+   'src/shell.cpp',
+diff --git a/homescreen/qml/IconItem.qml b/homescreen/qml/IconItem.qml
+index ace0628..7236e44 100644
+--- a/homescreen/qml/IconItem.qml
++++ b/homescreen/qml/IconItem.qml
+@@ -1,6 +1,6 @@
+ import QtQuick 2.0
+ import QtQuick.Controls 2.0
+-import QtGraphicalEffects 1.0
++//import QtGraphicalEffects 1.0
+ 
+ Item {
+     id: main
+diff --git a/homescreen/qml/MediaAreaBlank.qml b/homescreen/qml/MediaAreaBlank.qml
+index b758a7d..d574969 100644
+--- a/homescreen/qml/MediaAreaBlank.qml
++++ b/homescreen/qml/MediaAreaBlank.qml
+@@ -18,7 +18,7 @@
+ import QtQuick 2.2
+ import QtQuick.Layouts 1.1
+ import QtQuick.Controls 2.0
+-import AGL.Demo.Controls 1.0
++//import AGL.Demo.Controls 1.0
+ import MasterVolume 1.0
+ 
+ Image {
+diff --git a/homescreen/qml/ShortcutIcon.qml b/homescreen/qml/ShortcutIcon.qml
+index d039d36..2eb3c9f 100644
+--- a/homescreen/qml/ShortcutIcon.qml
++++ b/homescreen/qml/ShortcutIcon.qml
+@@ -17,7 +17,7 @@
+ 
+ import QtQuick 2.2
+ import QtQuick.Controls 2.0
+-import QtGraphicalEffects 1.0
++//import QtGraphicalEffects 1.0
+ 
+ MouseArea {
+     id: root
+diff --git a/homescreen/qml/TopArea.qml b/homescreen/qml/TopArea.qml
+index 3b0b25a..1bdaece 100644
+--- a/homescreen/qml/TopArea.qml
++++ b/homescreen/qml/TopArea.qml
+@@ -28,12 +28,12 @@ Image {
+     RowLayout {
+         anchors.fill: parent
+         spacing: 0
+-        ShortcutArea {
+-            id: shortcutArea
+-            Layout.fillWidth: true
+-            Layout.fillHeight: true
+-            Layout.preferredWidth: 775
+-        }
++        //ShortcutArea {
++        //    id: shortcutArea
++        //    Layout.fillWidth: true
++        //    Layout.fillHeight: true
++        //    Layout.preferredWidth: 775
++        //}
+         StatusArea {
+             id: statusArea
+             Layout.fillWidth: true
+diff --git a/homescreen/qml/background_with_panels.qml b/homescreen/qml/background_with_panels.qml
+index f0cb958..938065d 100644
+--- a/homescreen/qml/background_with_panels.qml
++++ b/homescreen/qml/background_with_panels.qml
+@@ -82,12 +82,12 @@ Window {
+          RowLayout {
+              anchors.fill: parent
+              spacing: 0
+-             ShortcutArea {
+-                 id: shortcutArea
+-                 Layout.fillWidth: true
+-                 Layout.fillHeight: true
+-                 Layout.preferredWidth: 775
+-             }
++             //ShortcutArea {
++            //     id: shortcutArea
++            //     Layout.fillWidth: true
++            //     Layout.fillHeight: true
++            //     Layout.preferredWidth: 775
++            // }
+              StatusArea {
+                  id: statusArea
+                  Layout.fillWidth: true
+@@ -114,8 +114,8 @@ Window {
+          height: 216
+          color: "#33363a"
+ 
+-         MediaArea {
+-         }
++         //MediaArea {
++         //}
+ 
+          Timer {
+              id:informationTimer
+diff --git a/homescreen/qml/bottompanel.qml b/homescreen/qml/bottompanel.qml
+index 6655ba8..5979d46 100644
+--- a/homescreen/qml/bottompanel.qml
++++ b/homescreen/qml/bottompanel.qml
+@@ -9,8 +9,8 @@ Window {
+     visible: true
+     color: "#33363a"
+ 
+-    MediaArea {
+-    }
++    //MediaArea {
++    //}
+ 
+     Timer {
+         id:informationTimer
+diff --git a/homescreen/qml/qml.qrc b/homescreen/qml/qml.qrc
+index 3c0dbcd..a497c43 100644
+--- a/homescreen/qml/qml.qrc
++++ b/homescreen/qml/qml.qrc
+@@ -1,11 +1,5 @@
+ <RCC>
+     <qresource prefix="/">
+-        <file>MediaArea.qml</file>
+-        <file>MediaAreaBlank.qml</file>
+-        <file>MediaAreaMusic.qml</file>
+-        <file>MediaAreaRadio.qml</file>
+-        <file>ShortcutArea.qml</file>
+-        <file>ShortcutIcon.qml</file>
+         <file>StatusArea.qml</file>
+         <file>TopArea.qml</file>
+         <file>IconItem.qml</file>
+diff --git a/meson.build b/meson.build
+index 3d77b36..9ce3607 100644
+--- a/meson.build
++++ b/meson.build
+@@ -29,5 +29,5 @@ project (
+     ],
+ )
+ 
+-qt5 = import('qt5')
++qt = import('qt6')
+ subdir('homescreen')

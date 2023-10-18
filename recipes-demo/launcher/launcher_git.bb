@@ -8,7 +8,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 DEPENDS = "\
         qtbase \
         qtdeclarative \
-        qtquickcontrols2 \
         libqtappfw \
         wayland-native \
         wayland \
@@ -42,4 +41,5 @@ RDEPENDS:${PN} += " \
     libqtappfw \
     applaunchd \
     homescreen \
+    qtdeclarative \
 "

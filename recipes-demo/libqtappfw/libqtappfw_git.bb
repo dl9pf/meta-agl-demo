@@ -21,16 +21,19 @@ DEPENDS = " \
     kuksa-databroker \
 "
 
-SRC_URI = "git://gerrit.automotivelinux.org/gerrit/src/libqtappfw;protocol=https;branch=${AGL_BRANCH}"
+SRC_URI = "git://gerrit.automotivelinux.org/gerrit/src/libqtappfw;protocol=https;branch=${AGL_BRANCH} \
+           file://0001-WIP-port-to-qt6.patch \
+           "
 SRCREV  = "e6e998428529bb788e2412e84757ad9a0b71fb32"
 S       = "${WORKDIR}/git"
 
 # PV needs to be modified with SRCPV to work AUTOREV correctly
 PV = "2.0.1+git${SRCPV}"
 
-inherit meson pkgconfig
+inherit meson pkgconfig qt6-paths
 
 EXTRA_OEMESON += "-Dprotos=${STAGING_INCDIR}"
+
 
 RRECOMMENDS:${PN} += "bluez5 connman mpd kuksa-databroker"
 
