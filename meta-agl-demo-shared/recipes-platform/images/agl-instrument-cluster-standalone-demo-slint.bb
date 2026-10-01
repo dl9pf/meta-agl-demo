@@ -5,7 +5,7 @@ require recipes-platform/images/agl-image-boot.bb
 
 IMAGE_FEATURES =+ "allow-empty-password empty-root-password allow-root-login post-install-logging"
 
-#NO_RECOMMENDATIONS = "1"
+NO_RECOMMENDATIONS = "1"
 
 AGLIC_CORE_PACKAGES = " \
     packagegroup-agl-ic-core \
@@ -13,7 +13,7 @@ AGLIC_CORE_PACKAGES = " \
     dlt-daemon-system \
 "
 AGLIC_DEMO_PACKAGES = " \
-    packagegroup-agl-shared-demo-board-support-slint \
+    packagegroup-agl-shared-demo-board-support \
     agl-slint-cluster \
     liberation-fonts \
 "

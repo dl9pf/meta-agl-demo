@@ -18,18 +18,24 @@ RDEPENDS:${PN} = " \
 
 # For Raspberry Pi boards.
 RDEPENDS:${PN}:append:rpi = " \
+    libegl-mesa libgles2-mesa \
     mesa-megadriver \
     mesa-vulkan-drivers \
 "
 
 # For Rockchip rK3588 boards.
 RDEPENDS:${PN}:append:rk3588 = " \
+    libegl-mesa libgles2-mesa \
     mesa-megadriver \
     mesa-vulkan-drivers \
+    linux-firmware-rtl8822 \
+    linux-firmware-rtl-nic \
+    linux-firmware-mali-csffw-arch108 \
 "
 
 # For Virtio.
 RDEPENDS:${PN}:append:virtio-all = " \
+    libegl-mesa libgles2-mesa \
     mesa-megadriver \
     mesa-vulkan-drivers \
 "
