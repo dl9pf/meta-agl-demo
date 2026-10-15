@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT
+header:
+  version: 22
+  includes:
+    - kas/feature/agl-demo.yml
+    - repo: meta-agl-devel
+      file: kas/feature/agl-uhmi.yml
+
+repos:
+  meta-agl-devel:
+    path: meta-agl-devel
+    layers:
+      meta-uhmi/meta-agl-uhmi-demo:

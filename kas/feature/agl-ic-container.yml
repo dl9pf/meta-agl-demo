@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+header:
+  version: 22
+  includes:
+    - repo: meta-agl
+      file: kas/feature/agl-drm-lease.yml
+    - repo: meta-agl
+      file: kas/feature/agl-ic.yml
+    - repo: meta-agl
+      file: kas/feature/agl-pipewire.yml
+    - repo: meta-agl
+      file: kas/feature/agl-selinux.yml
+
+repos:
+  meta-agl-devel:
+    path: meta-agl-devel
+    layers:
+      meta-agl-ic-container:
+  meta-agl-demo:
+    path: meta-agl-demo
+    layers:
+      meta-agl-demo-shared:
+
+local_conf_header:
+  agl-ic-container: |
+    require conf/include/agl-ic-container.inc
