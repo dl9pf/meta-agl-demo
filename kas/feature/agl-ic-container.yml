@@ -20,6 +20,22 @@ repos:
     path: meta-agl-demo
     layers:
       meta-agl-demo-shared:
+  # aglcontainermc (meta-agl-ic-container's own layer.conf) declares LAYERDEPENDS on both of
+  # these - confirmed live via "Layer 'aglcontainermc' depends on layer 'qt6-layer'/
+  # 'virtualization-layer', but this layer is not enabled" before adding them.
+  meta-qt6:
+    url: https://code.qt.io/yocto/meta-qt6
+    path: external/meta-qt6
+    branch: "6.12"
+  meta-virtualization:
+    url: https://git.yoctoproject.org/meta-virtualization
+    path: external/meta-virtualization
+    branch: wrynose
+  # virtualization-layer's own LAYERDEPENDS, in turn - same combo agl-xen.yml already needs.
+  meta-openembedded:
+    layers:
+      meta-networking:
+      meta-filesystems:
 
 local_conf_header:
   agl-ic-container: |
