@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: MIT
+# Images owned by meta-agl-demo. Schema and tools: https://github.com/dl9pf-agl/agl-ci (ci/scripts/_matrix.py).
+# Machine sets and tier presets come from agl-ci (ci/matrix-defaults.yaml): `machines: ci` = qemux86-64, qemuarm64,
+# raspberrypi5, sparrow-hawk; `tiers: gate` = pull request gate on qemux86-64, all machines nightly, on release and on dispatch.
+# `needs` makes a run of a repo it needs also build this repo's images (downstream chain, agl-ci chapter 13).
+needs: [meta-agl]
+machine_eula: {}
+
+images:
+  - {target: agl-ivi-demo-flutter, features: [agl-demo], sdk: false, machines: ci, tiers: gate}
+  - {target: agl-ivi-demo-qt, features: [agl-demo], sdk: false, machines: ci, tiers: gate}
+  - {target: agl-kvm-demo, features: [agl-demo, agl-kvm], sdk: true, machines: [qemux86-64], tiers: gate}
+  - {target: agl-cluster-demo-flutter, features: [agl-demo], sdk: false, machines: ci, tiers: nightly-x86}
+  - {target: agl-cluster-demo-qt, features: [agl-demo], sdk: false, machines: ci, tiers: dispatch}
+  - {target: agl-gateway-demo, features: [agl-demo], sdk: false, machines: ci, tiers: dispatch}
+  - {target: agl-instrument-cluster-standalone-demo, features: [agl-ic], sdk: false, machines: [raspberrypi5, sparrow-hawk], tiers: dispatch}
+  - {target: agl-instrument-cluster-standalone-demo-slint, features: [agl-ic, agl-ic-slint], sdk: false, machines: [raspberrypi5, sparrow-hawk], tiers: dispatch}
+
+# yocto-check-layer: the layers of this repo are listed so that `make validate CHECK_LAYERS="meta-agl-demo ..."` and
+# CHECK_LAYERS=all can check them. NOT active in CI yet: `default` stays empty until the layers pass; then list them there
+# and every run in scope (also a meta-agl run, through `needs`) checks them in addition to meta-agl-core.
+check_layers:
+  default: []
+  dependency_roots:
+    - meta-agl-demo
+    - external/meta-qt6
+    - external/meta-flutter
+    - external/meta-virtualization
+  layers:
+    - meta-agl-demo
+    - meta-agl-demo/meta-agl-demo-shared
+    - meta-agl-demo/meta-agl-kvm-demo

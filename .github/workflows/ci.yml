@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+# Thin caller: all CI logic lives in dl9pf-agl/agl-ci, pinned here by full commit SHA (bumped by Dependabot).
+# The repo under test, the tier and the mode of a manual run come from the event (agl-ci chapter 13).
+# No schedule here: the nightly of meta-agl already builds the images of this repo (`needs` chain).
+name: ci
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Matrix tier to build'
+        type: choice
+        options: [push-pr, nightly, release, dispatch]
+        default: dispatch
+      mode:
+        description: 'build = validate + build; drill = offline fetch (outage drill); drill-mirror = fetch from the mirror alone; fetch = fill the download cache'
+        type: choice
+        options: [build, drill, drill-mirror, fetch]
+        default: build
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: dl9pf-agl/agl-ci/.github/workflows/layer-ci.yml@31d44b276b85edf643e81632486ed094d8c560e7 # main (agl-ci PR #37)
