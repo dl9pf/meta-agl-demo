@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# Thin caller: all CI logic lives in dl9pf-agl/agl-ci, pinned here by full commit SHA (bumped by Dependabot).
+# Thin caller: all CI logic lives in dl9pf-agl/agl-ci, pinned here by full commit SHA (bumped by hand through a pull request; this repo has no Dependabot).
 # The repo under test, the tier and the mode of a manual run come from the event (agl-ci chapter 13).
 # No schedule here: the nightly of meta-agl already builds the images of this repo (`needs` chain).
 name: ci

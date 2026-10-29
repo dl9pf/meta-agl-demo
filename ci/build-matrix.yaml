@@ -17,7 +17,7 @@ images:
   # - {target: agl-instrument-cluster-standalone-demo, features: [agl-ic], sdk: false, machines: [raspberrypi5, sparrow-hawk], tiers: dispatch}
   # - {target: agl-instrument-cluster-standalone-demo-slint, features: [agl-ic, agl-ic-slint], sdk: false, machines: [raspberrypi5, sparrow-hawk], tiers: dispatch}
 
-# yocto-check-layer: the layers of this repo are listed so that `make validate CHECK_LAYERS="meta-agl-demo ..."` and
+# yocto-check-layer: the layers of this repo are listed so that `CHECK_LAYERS="meta-agl-demo ..." ci/scripts/validate.sh` of agl-ci and
 # CHECK_LAYERS=all can check them. NOT active in CI yet: `default` stays empty until the layers pass; then list them there
 # and every run in scope (also a meta-agl run, through `needs`) checks them in addition to meta-agl-core.
 check_layers:
