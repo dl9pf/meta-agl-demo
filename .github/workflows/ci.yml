@@ -23,4 +23,4 @@ permissions:
 
 jobs:
   ci:
-    uses: dl9pf-agl/agl-ci/.github/workflows/layer-ci.yml@31d44b276b85edf643e81632486ed094d8c560e7 # main (agl-ci PR #37)
+    uses: dl9pf-agl/agl-ci/.github/workflows/layer-ci.yml@5212c16d61c8c7265e266056a63ec831c21e6aef # main (agl-ci PR #40)
