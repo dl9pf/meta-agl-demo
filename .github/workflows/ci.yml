@@ -23,4 +23,4 @@ permissions:
 
 jobs:
   ci:
-    uses: dl9pf-agl/agl-ci/.github/workflows/layer-ci.yml@d53c0d333e7615dc64772c651b4fac05ec158b7a # main (agl-ci d53c0d3: validate --verbose, builder digest)
+    uses: dl9pf-agl/agl-ci/.github/workflows/layer-ci.yml@03a9d258e8f997dbc4e4aa28eda239af49e572f0 # main (agl-ci 03a9d25: check-layer as its own job)
